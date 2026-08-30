@@ -1,0 +1,1 @@
+dd if=/dev/urandom of=test_1 bs=200M count=1 && cp test_1 test_2 && cp test_1 test_3 && cp test_1 test_4 && cp test_1 test_5
