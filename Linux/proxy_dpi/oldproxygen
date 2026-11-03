@@ -1,0 +1,54 @@
+#!/bin/bash
+
+echo "Start Proxy Searcher"
+
+#sleep 2
+
+for (( ; count < 400 ; )) do
+
+wget https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks5/data.txt
+
+sed 's/.*\///' data.txt > listofproxies.txt
+
+echo "" >> listofproxies.txt
+
+rm data.txt
+
+wget https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks4/data.txt
+
+sed 's/.*\///' data.txt >> listofproxies.txt
+
+sort listofproxies.txt > data.txt
+
+uniq data.txt > listofproxies.txt
+
+rm data.txt
+
+echo "copy goodproxies.txt to listofproxies.txt OK !"
+
+cat complete.txt
+
+echo "Start check"
+
+#proxy-checker-cli listofproxies.txt -s --code=20. -o goodproxies.txt  --url=https://web.telegram.org
+proxy-checker-cli listofproxies.txt -s --code=200 -o goodproxies.txt  --url=https://web.telegram.org
+
+rm listofproxies.txt
+
+sleep 10
+
+#echo $count >> goodproxies.txt
+
+cat goodproxies.txt >> complete.txt
+
+sort complete.txt > csort.txt
+
+uniq csort.txt > complete.txt
+
+count=$(wc -l < "complete.txt" | awk '{print $1}')
+
+done
+
+echo "Complete !"
+
+cat complete.txt

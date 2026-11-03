@@ -1,0 +1,35 @@
+#!/bin/bash
+
+INPUT="listofproxies.txt"
+OUTPUT="goodproxies.txt"
+URL="https://web.telegram.org"
+
+wget https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks5/data.txt
+
+sed 's/.*\///' data.txt > $INPUT
+
+rm data.txt
+
+wget https://cdn.jsdelivr.net/gh/proxifly/free-proxy-list@main/proxies/protocols/socks4/data.txt
+
+sed 's/.*\///' data.txt >> $INPUT
+
+sort $INPUT > data.txt
+
+uniq data.txt > $INPUT
+
+rm data.txt
+
+cat $OUTPUT
+cat $OUTPUT >> $INPUT
+:> $OUTPUT
+
+while IFS= read -r line; do
+  [[ -z "$line" || "$line" == \#* ]] && continue
+
+  if curl --socks5-hostname "$line" --max-time 2 "$URL" -s | grep -q "<title>Telegram Web</title>"; then
+    echo "$line" >> "$OUTPUT"
+  fi
+done < "$INPUT"
+
+echo "Готово. Рабочие прокси сохранены в $OUTPUT"
